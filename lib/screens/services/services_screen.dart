@@ -37,7 +37,7 @@ class _ServicesScreenState extends State<ServicesScreen> {
           }
 
           if (serviceProvider.error != null) {
-            return ErrorWidget(
+            return AppErrorWidget(
               message: serviceProvider.error!,
               onRetry: () => serviceProvider.fetchServices(),
             );

@@ -81,7 +81,10 @@ class BookingProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await _apiService.updateBookingStatus(bookingId, status);
+      final response = await _apiService.updateBookingStatus(
+        bookingId,
+        status.toString().split('.').last,
+      );
       if (response['success']) {
         final index = _bookings.indexWhere((b) => b.id == bookingId);
         if (index != -1) {

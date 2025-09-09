@@ -96,7 +96,7 @@ class _BookingScreenState extends State<BookingScreen> {
           }
 
           if (serviceProvider.error != null) {
-            return ErrorWidget(
+            return AppErrorWidget(
               message: serviceProvider.error!,
               onRetry: () => serviceProvider.fetchServices(),
             );

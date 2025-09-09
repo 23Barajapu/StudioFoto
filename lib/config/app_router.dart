@@ -25,17 +25,17 @@ class AppRouter {
       final isAdmin = authProvider.isAdmin;
       
       // Jika user belum login dan mencoba akses halaman yang memerlukan auth
-      if (!isLoggedIn && _requiresAuth(state.location)) {
+      if (!isLoggedIn && _requiresAuth(state.uri.toString())) {
         return '/login';
       }
       
       // Jika user login sebagai admin dan mengakses halaman admin
-      if (isLoggedIn && isAdmin && state.location.startsWith('/admin')) {
+      if (isLoggedIn && isAdmin && state.uri.toString().startsWith('/admin')) {
         return null; // Allow access
       }
       
       // Jika user biasa mencoba akses halaman admin
-      if (isLoggedIn && !isAdmin && state.location.startsWith('/admin')) {
+      if (isLoggedIn && !isAdmin && state.uri.toString().startsWith('/admin')) {
         return '/';
       }
       

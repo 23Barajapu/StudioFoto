@@ -85,7 +85,7 @@ class AppTheme {
         hintStyle: GoogleFonts.poppins(color: textLight),
         labelStyle: GoogleFonts.poppins(color: textSecondary),
       ),
-      cardTheme: CardTheme(
+      cardTheme: const CardTheme(
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),

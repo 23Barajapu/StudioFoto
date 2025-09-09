@@ -43,7 +43,7 @@ class _BookingDetailScreenState extends State<BookingDetailScreen> {
           final booking = bookingProvider.getBookingById(widget.bookingId);
 
           if (booking == null) {
-            return const ErrorWidget(message: 'Booking tidak ditemukan');
+            return const AppErrorWidget(message: 'Booking tidak ditemukan');
           }
 
           return SingleChildScrollView(
