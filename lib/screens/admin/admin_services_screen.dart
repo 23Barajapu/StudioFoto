@@ -35,7 +35,7 @@ class _AdminServicesScreenState extends State<AdminServicesScreen> {
           }
 
           if (serviceProvider.error != null) {
-            return ErrorWidget(
+            return AppErrorWidget(
               message: serviceProvider.error!,
               onRetry: () => serviceProvider.fetchServices(),
             );

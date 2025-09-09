@@ -18,7 +18,7 @@ class PortfolioPreviewWidget extends StatelessWidget {
         }
 
         if (portfolioProvider.error != null) {
-          return ErrorWidget(message: portfolioProvider.error!);
+          return AppErrorWidget(message: portfolioProvider.error!);
         }
 
         final portfolios = portfolioProvider.portfolios.take(6).toList();

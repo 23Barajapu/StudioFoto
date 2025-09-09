@@ -273,10 +273,11 @@ class _ServicesScreenState extends State<ServicesScreen> {
     
     if (!authProvider.isLoggedIn) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Silakan login terlebih dahulu untuk melakukan booking'),
+        SnackBar(
+          content: const Text('Silakan login terlebih dahulu untuk melakukan booking'),
           action: SnackBarAction(
             label: 'Login',
+            onPressed: () => context.go('/login'),
             textColor: Colors.white,
           ),
         ),

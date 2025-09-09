@@ -39,7 +39,7 @@ class _AdminBookingsScreenState extends State<AdminBookingsScreen> {
           }
 
           if (bookingProvider.error != null) {
-            return ErrorWidget(
+            return AppErrorWidget(
               message: bookingProvider.error!,
               onRetry: () => bookingProvider.fetchBookings(),
             );

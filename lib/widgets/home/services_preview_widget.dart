@@ -18,7 +18,7 @@ class ServicesPreviewWidget extends StatelessWidget {
         }
 
         if (serviceProvider.error != null) {
-          return ErrorWidget(message: serviceProvider.error!);
+          return AppErrorWidget(message: serviceProvider.error!);
         }
 
         final services = serviceProvider.activeServices.take(3).toList();

@@ -35,7 +35,7 @@ class _AdminPortfolioScreenState extends State<AdminPortfolioScreen> {
           }
 
           if (portfolioProvider.error != null) {
-            return ErrorWidget(
+            return AppErrorWidget(
               message: portfolioProvider.error!,
               onRetry: () => portfolioProvider.fetchPortfolios(),
             );

@@ -19,7 +19,7 @@ class BookingHistoryWidget extends StatelessWidget {
         }
 
         if (bookingProvider.error != null) {
-          return ErrorWidget(
+          return AppErrorWidget(
             message: bookingProvider.error!,
             onRetry: () => bookingProvider.fetchBookings(),
           );

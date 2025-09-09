@@ -38,7 +38,7 @@ class _PortfolioScreenState extends State<PortfolioScreen> {
           }
 
           if (portfolioProvider.error != null) {
-            return ErrorWidget(
+            return AppErrorWidget(
               message: portfolioProvider.error!,
               onRetry: () => portfolioProvider.fetchPortfolios(),
             );
