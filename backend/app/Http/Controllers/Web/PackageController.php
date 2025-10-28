@@ -95,6 +95,7 @@ class PackageController extends Controller
             'duration_hours' => 'required|integer|min:1',
             'photo_count' => 'required|integer|min:1',
             'edited_photo_count' => 'required|integer|min:0',
+            'is_active' => 'boolean',
             'include_makeup' => 'boolean',
             'include_outfit' => 'boolean',
             'features' => 'nullable|array',
@@ -103,8 +104,14 @@ class PackageController extends Controller
 
         $data = $request->except('image');
         $data['slug'] = Str::slug($request->name);
+        $data['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('image')) {
+            // Hapus gambar lama jika ada
+            if ($package->image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($package->image);
+            }
+            
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('packages', $filename, 'public');

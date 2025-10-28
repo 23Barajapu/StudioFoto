@@ -57,6 +57,13 @@ class Package extends Model
                 $package->slug = Str::slug($package->name);
             }
         });
+
+        // Hapus gambar saat paket dihapus
+        static::deleting(function ($package) {
+            if ($package->image) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($package->image);
+            }
+        });
     }
 
     /**
@@ -96,6 +103,14 @@ class Package extends Model
      */
     public function getFormattedPriceAttribute(): string
     {
-        return 'Rp ' . number_format($this->price, 0, ',', '.');
+        return 'Rp' . number_format($this->price, 0, ',', '.');
+    }
+
+    /**
+     * Get full image URL
+     */
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? asset('storage/' . $this->image) : null;
     }
 }
