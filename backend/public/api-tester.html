@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Tester - Prime Studio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .card h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .badge {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .badge.post { background: #48bb78; color: white; }
+        .badge.get { background: #4299e1; color: white; }
+        .badge.auth { background: #ed8936; color: white; }
+        .badge.public { background: #718096; color: white; }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        button:disabled {
+            background: #cbd5e0;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .response {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.6;
+        }
+        .input-group {
+            margin-bottom: 12px;
+        }
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .input-group input, .input-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .input-group input:focus, .input-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .token-display {
+            background: #fef5e7;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            word-break: break-all;
+            font-size: 12px;
+            color: #856404;
+        }
+        .status {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-left: 10px;
+        }
+        .status.success { background: #48bb78; }
+        .status.error { background: #f56565; }
+        .status.pending { background: #ecc94b; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 API Tester - Prime Studio</h1>
+        
+        <div class="grid">
+            <!-- Health Check -->
+            <div class="card">
+                <h3>
+                    <span class="badge get">GET</span>
+                    <span class="badge public">Public</span>
+                    Health Check
+                </h3>
+                <button onclick="testHealth()">Test Health</button>
+                <div class="response" id="health-response"></div>
+            </div>
+
+            <!-- Register -->
+            <div class="card">
+                <h3>
+                    <span class="badge post">POST</span>
+                    <span class="badge public">Public</span>
+                    Register
+                </h3>
+                <div class="input-group">
+                    <label>Name</label>
+                    <input type="text" id="reg-name" placeholder="Test User" value="Test User">
+                </div>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="reg-email" placeholder="test@example.com">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="reg-password" placeholder="password123" value="password123">
+                </div>
+                <button onclick="testRegister()">Register</button>
+                <div class="response" id="register-response"></div>
+            </div>
+
+            <!-- Login -->
+            <div class="card">
+                <h3>
+                    <span class="badge post">POST</span>
+                    <span class="badge public">Public</span>
+                    Login
+                </h3>
+                <div class="input-group">
+                    <label>Email</label>
+                    <input type="email" id="login-email" placeholder="admin@photostudio.com" value="admin@photostudio.com">
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" id="login-password" placeholder="password123" value="password123">
+                </div>
+                <button onclick="testLogin()">Login</button>
+                <div class="response" id="login-response"></div>
+                <div class="token-display" id="token-display" style="display:none;"></div>
+            </div>
+
+            <!-- Get Packages -->
+            <div class="card">
+                <h3>
+                    <span class="badge get">GET</span>
+                    <span class="badge public">Public</span>
+                    Packages
+                </h3>
+                <button onclick="testGetPackages()">Get All Packages</button>
+                <div class="response" id="packages-response"></div>
+            </div>
+
+            <!-- Get Schedules -->
+            <div class="card">
+                <h3>
+                    <span class="badge get">GET</span>
+                    <span class="badge public">Public</span>
+                    Schedules
+                </h3>
+                <button onclick="testGetSchedules()">Get Schedules</button>
+                <button onclick="testGetSchedules(true)" style="margin-top:10px; background:#48bb78;">Get Available Only</button>
+                <div class="response" id="schedules-response"></div>
+            </div>
+
+            <!-- Get Galleries -->
+            <div class="card">
+                <h3>
+                    <span class="badge get">GET</span>
+                    <span class="badge public">Public</span>
+                    Galleries
+                </h3>
+                <button onclick="testGetGalleries()">Get All Galleries</button>
+                <div class="response" id="galleries-response"></div>
+            </div>
+
+            <!-- Get User Profile -->
+            <div class="card">
+                <h3>
+                    <span class="badge get">GET</span>
+                    <span class="badge auth">Auth</span>
+                    User Profile
+                </h3>
+                <button onclick="testGetUser()">Get My Profile</button>
+                <div class="response" id="user-response"></div>
+            </div>
+
+            <!-- Create Booking -->
+            <div class="card">
+                <h3>
+                    <span class="badge post">POST</span>
+                    <span class="badge auth">Auth</span>
+                    Create Booking
+                </h3>
+                <div class="input-group">
+                    <label>Package ID</label>
+                    <input type="number" id="booking-package" placeholder="1" value="1">
+                </div>
+                <div class="input-group">
+                    <label>Schedule ID</label>
+                    <input type="number" id="booking-schedule" placeholder="1" value="1">
+                </div>
+                <div class="input-group">
+                    <label>Notes</label>
+                    <textarea id="booking-notes" placeholder="Customer notes" rows="2">Test booking from API tester</textarea>
+                </div>
+                <button onclick="testCreateBooking()">Create Booking</button>
+                <div class="response" id="booking-response"></div>
+            </div>
+
+            <!-- My Bookings -->
+            <div class="card">
+                <h3>
+                    <span class="badge get">GET</span>
+                    <span class="badge auth">Auth</span>
+                    My Bookings
+                </h3>
+                <button onclick="testGetBookings()">Get My Bookings</button>
+                <div class="response" id="my-bookings-response"></div>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="card">
+                <h3>
+                    <span class="badge get">GET</span>
+                    <span class="badge auth">Auth</span>
+                    Dashboard
+                </h3>
+                <button onclick="testGetDashboard()">Get Dashboard Stats</button>
+                <div class="response" id="dashboard-response"></div>
+            </div>
+
+            <!-- Logout -->
+            <div class="card">
+                <h3>
+                    <span class="badge post">POST</span>
+                    <span class="badge auth">Auth</span>
+                    Logout
+                </h3>
+                <button onclick="testLogout()">Logout</button>
+                <div class="response" id="logout-response"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+        let authToken = localStorage.getItem('auth_token') || '';
+
+        function showResponse(elementId, data, isError = false) {
+            const el = document.getElementById(elementId);
+            el.textContent = JSON.stringify(data, null, 2);
+            el.style.borderLeft = isError ? '4px solid #f56565' : '4px solid #48bb78';
+        }
+
+        async function testHealth() {
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                showResponse('health-response', data);
+            } catch (error) {
+                showResponse('health-response', { error: error.message }, true);
+            }
+        }
+
+        async function testRegister() {
+            const name = document.getElementById('reg-name').value;
+            const email = document.getElementById('reg-email').value || `test${Date.now()}@example.com`;
+            const password = document.getElementById('reg-password').value;
+
+            document.getElementById('reg-email').value = email;
+
+            try {
+                const response = await fetch(`${API_BASE}/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name,
+                        email,
+                        password,
+                        password_confirmation: password
+                    })
+                });
+                const data = await response.json();
+                
+                if (data.success && data.data.access_token) {
+                    authToken = data.data.access_token;
+                    localStorage.setItem('auth_token', authToken);
+                    showTokenDisplay();
+                }
+                
+                showResponse('register-response', data, !data.success);
+            } catch (error) {
+                showResponse('register-response', { error: error.message }, true);
+            }
+        }
+
+        async function testLogin() {
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+                const data = await response.json();
+                
+                if (data.success && data.data.access_token) {
+                    authToken = data.data.access_token;
+                    localStorage.setItem('auth_token', authToken);
+                    showTokenDisplay();
+                }
+                
+                showResponse('login-response', data, !data.success);
+            } catch (error) {
+                showResponse('login-response', { error: error.message }, true);
+            }
+        }
+
+        async function testGetPackages() {
+            try {
+                const response = await fetch(`${API_BASE}/packages`);
+                const data = await response.json();
+                showResponse('packages-response', data);
+            } catch (error) {
+                showResponse('packages-response', { error: error.message }, true);
+            }
+        }
+
+        async function testGetSchedules(availableOnly = false) {
+            try {
+                const url = availableOnly ? `${API_BASE}/schedules?available=true` : `${API_BASE}/schedules`;
+                const response = await fetch(url);
+                const data = await response.json();
+                showResponse('schedules-response', data);
+            } catch (error) {
+                showResponse('schedules-response', { error: error.message }, true);
+            }
+        }
+
+        async function testGetGalleries() {
+            try {
+                const response = await fetch(`${API_BASE}/galleries`);
+                const data = await response.json();
+                showResponse('galleries-response', data);
+            } catch (error) {
+                showResponse('galleries-response', { error: error.message }, true);
+            }
+        }
+
+        async function testGetUser() {
+            if (!authToken) {
+                showResponse('user-response', { error: 'Please login first' }, true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/user`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                const data = await response.json();
+                showResponse('user-response', data, !data.success);
+            } catch (error) {
+                showResponse('user-response', { error: error.message }, true);
+            }
+        }
+
+        async function testCreateBooking() {
+            if (!authToken) {
+                showResponse('booking-response', { error: 'Please login first' }, true);
+                return;
+            }
+
+            const packageId = document.getElementById('booking-package').value;
+            const scheduleId = document.getElementById('booking-schedule').value;
+            const notes = document.getElementById('booking-notes').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/bookings`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    },
+                    body: JSON.stringify({
+                        package_id: parseInt(packageId),
+                        schedule_id: parseInt(scheduleId),
+                        customer_notes: notes
+                    })
+                });
+                const data = await response.json();
+                showResponse('booking-response', data, !data.success);
+            } catch (error) {
+                showResponse('booking-response', { error: error.message }, true);
+            }
+        }
+
+        async function testGetBookings() {
+            if (!authToken) {
+                showResponse('my-bookings-response', { error: 'Please login first' }, true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/bookings`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                const data = await response.json();
+                showResponse('my-bookings-response', data, !data.success);
+            } catch (error) {
+                showResponse('my-bookings-response', { error: error.message }, true);
+            }
+        }
+
+        async function testGetDashboard() {
+            if (!authToken) {
+                showResponse('dashboard-response', { error: 'Please login first' }, true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/dashboard`, {
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                const data = await response.json();
+                showResponse('dashboard-response', data, !data.success);
+            } catch (error) {
+                showResponse('dashboard-response', { error: error.message }, true);
+            }
+        }
+
+        async function testLogout() {
+            if (!authToken) {
+                showResponse('logout-response', { error: 'Not logged in' }, true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/logout`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Authorization': `Bearer ${authToken}`
+                    }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    authToken = '';
+                    localStorage.removeItem('auth_token');
+                    document.getElementById('token-display').style.display = 'none';
+                }
+                
+                showResponse('logout-response', data, !data.success);
+            } catch (error) {
+                showResponse('logout-response', { error: error.message }, true);
+            }
+        }
+
+        function showTokenDisplay() {
+            const el = document.getElementById('token-display');
+            el.style.display = 'block';
+            el.textContent = `Token: ${authToken.substring(0, 30)}...`;
+        }
+
+        // Show token on load if exists
+        if (authToken) {
+            showTokenDisplay();
+        }
+
+        // Test health on load
+        testHealth();
+    </script>
+</body>
+</html>

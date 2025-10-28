@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prime Studio - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .sidebar-active {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-lunas {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-dp {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-belum {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside class="w-64 gradient-bg text-white flex-shrink-0 overflow-y-auto">
+            <div class="p-6">
+                <h1 class="text-2xl font-bold mb-8">Prime Studio</h1>
+                
+                <nav class="space-y-2">
+                    <a href="#" class="flex items-center space-x-3 p-3 sidebar-active">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/10 rounded-lg transition">
+                        <i class="fas fa-calendar-check"></i>
+                        <span>Booking</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/10 rounded-lg transition">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span>Kelola Pembayaran</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/10 rounded-lg transition">
+                        <i class="fas fa-bell"></i>
+                        <span>Notifikasi</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/10 rounded-lg transition">
+                        <i class="fas fa-history"></i>
+                        <span>Riwayat pemesanan</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/10 rounded-lg transition">
+                        <i class="fas fa-box"></i>
+                        <span>Daftar Paket</span>
+                    </a>
+                    <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/10 rounded-lg transition">
+                        <i class="fas fa-chart-line"></i>
+                        <span>Laporan Pendapatan</span>
+                    </a>
+                </nav>
+            </div>
+            
+            <!-- User Profile -->
+            <div class="absolute bottom-0 w-64 p-6 border-t border-white/20">
+                <div class="flex items-center space-x-3">
+                    <img src="https://ui-avatars.com/api/?name=Yanto&background=667eea&color=fff" 
+                         class="w-10 h-10 rounded-full" alt="User">
+                    <div class="flex-1">
+                        <p class="font-semibold" id="userName">Yanto</p>
+                        <p class="text-xs opacity-75">Admin</p>
+                    </div>
+                    <button class="text-white/70 hover:text-white">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto">
+            <!-- Header -->
+            <header class="bg-white shadow-sm px-8 py-4 flex justify-between items-center">
+                <h2 class="text-2xl font-bold text-gray-800">Dashboard</h2>
+                <button class="relative text-gray-600 hover:text-gray-800">
+                    <i class="fas fa-bell text-xl"></i>
+                    <span class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+                </button>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="p-8">
+                <!-- Stats Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <!-- Pendapatan Card -->
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm mb-2">Pendapatan</p>
+                                <h3 class="text-2xl font-bold text-gray-800" id="totalRevenue">Rp 0</h3>
+                                <div class="mt-4">
+                                    <a href="#" class="text-indigo-600 text-sm font-semibold flex items-center">
+                                        Lihat pendapatan <i class="fas fa-arrow-right ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-file-invoice text-indigo-600 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center">
+                            <i class="fas fa-arrow-up text-green-500 text-sm mr-1"></i>
+                            <span class="text-green-500 text-sm font-semibold">12%</span>
+                            <span class="text-gray-500 text-sm ml-2">Naik</span>
+                        </div>
+                    </div>
+
+                    <!-- Riwayat Pemesanan Card -->
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm mb-2">Riwayat Pemesanan</p>
+                                <h3 class="text-2xl font-bold text-gray-800" id="totalBookings">0</h3>
+                                <p class="text-gray-500 text-sm mt-1">Ada Riwayat baru</p>
+                                <div class="mt-4">
+                                    <a href="#" class="text-indigo-600 text-sm font-semibold flex items-center">
+                                        Lihat <i class="fas fa-arrow-right ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-clock text-green-600 text-xl"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Kelola Pembayaran Card -->
+                    <div class="bg-white rounded-xl shadow-md p-6 card-hover">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm mb-2">Kelola Pembayaran</p>
+                                <h3 class="text-2xl font-bold text-gray-800" id="pendingPayments">0</h3>
+                                <p class="text-gray-500 text-sm mt-1">Pembayaran baru</p>
+                                <div class="mt-4">
+                                    <a href="#" class="text-indigo-600 text-sm font-semibold flex items-center">
+                                        Lihat <i class="fas fa-arrow-right ml-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                <i class="fas fa-dollar-sign text-purple-600 text-xl"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center">
+                            <i class="fas fa-exclamation-circle text-orange-500 text-sm mr-1"></i>
+                            <span class="text-orange-500 text-sm font-semibold">Perlu perhatian</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bookings Table -->
+                <div class="bg-white rounded-xl shadow-md overflow-hidden">
+                    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-gray-800">Daftar Booking Terbaru</h3>
+                        <a href="#" class="text-indigo-600 text-sm font-semibold">Lihat Semua</a>
+                    </div>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nama</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Waktu</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Paket</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Harga</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jml Orang</th>
+                                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status Pembayaran</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200" id="bookingsTable">
+                                <tr>
+                                    <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+                                        <i class="fas fa-spinner fa-spin text-2xl mb-2"></i>
+                                        <p>Memuat data...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE_URL = 'http://localhost:8000/api';
+        let authToken = localStorage.getItem('auth_token');
+
+        // Format currency
+        function formatCurrency(amount) {
+            return 'Rp ' + new Intl.NumberFormat('id-ID').format(amount);
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', { 
+                year: 'numeric', 
+                month: '2-digit', 
+                day: '2-digit' 
+            });
+        }
+
+        // Format time
+        function formatTime(timeString) {
+            return timeString.substring(0, 5);
+        }
+
+        // Get status badge
+        function getStatusBadge(status) {
+            const statusMap = {
+                'pending': { class: 'status-belum', text: 'Belum Lunas' },
+                'confirmed': { class: 'status-belum', text: 'Belum Lunas' },
+                'paid': { class: 'status-lunas', text: 'Lunas' },
+                'completed': { class: 'status-lunas', text: 'Lunas' },
+                'cancelled': { class: 'status-belum', text: 'Dibatalkan' }
+            };
+            
+            const badge = statusMap[status] || { class: 'status-belum', text: 'Belum Lunas' };
+            return `<span class="status-badge ${badge.class}">${badge.text}</span>`;
+        }
+
+        // Load dashboard data
+        async function loadDashboard() {
+            try {
+                // Check if logged in
+                if (!authToken) {
+                    // Auto login with admin credentials for demo
+                    await autoLogin();
+                }
+
+                // Load dashboard stats
+                const response = await fetch(`${API_BASE_URL}/admin/dashboard`, {
+                    headers: {
+                        'Authorization': `Bearer ${authToken}`,
+                        'Accept': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to load dashboard');
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    const { overview, recent_bookings } = data.data;
+                    
+                    // Update stats
+                    document.getElementById('totalRevenue').textContent = formatCurrency(overview.total_revenue);
+                    document.getElementById('totalBookings').textContent = overview.total_bookings;
+                    document.getElementById('pendingPayments').textContent = overview.pending_bookings;
+                    
+                    // Load bookings table
+                    loadBookings(recent_bookings);
+                }
+            } catch (error) {
+                console.error('Error loading dashboard:', error);
+                showError('Gagal memuat data dashboard');
+            }
+        }
+
+        // Auto login (for demo purposes)
+        async function autoLogin() {
+            try {
+                const response = await fetch(`${API_BASE_URL}/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: 'admin@photostudio.com',
+                        password: 'password123'
+                    })
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    authToken = data.data.access_token;
+                    localStorage.setItem('auth_token', authToken);
+                    document.getElementById('userName').textContent = data.data.user.name;
+                }
+            } catch (error) {
+                console.error('Auto login failed:', error);
+            }
+        }
+
+        // Load bookings table
+        function loadBookings(bookings) {
+            const tbody = document.getElementById('bookingsTable');
+            
+            if (!bookings || bookings.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="px-6 py-8 text-center text-gray-500">
+                            <i class="fas fa-inbox text-4xl mb-2"></i>
+                            <p>Belum ada data booking</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = bookings.map((booking, index) => `
+                <tr class="hover:bg-gray-50 transition">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${booking.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">${booking.user.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatDate(booking.booking_date)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${formatTime(booking.booking_time)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${booking.package.name}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">${formatCurrency(booking.total_price)}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">1</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">${getStatusBadge(booking.status)}</td>
+                </tr>
+            `).join('');
+        }
+
+        // Show error message
+        function showError(message) {
+            const tbody = document.getElementById('bookingsTable');
+            tbody.innerHTML = `
+                <tr>
+                    <td colspan="8" class="px-6 py-8 text-center text-red-500">
+                        <i class="fas fa-exclamation-circle text-4xl mb-2"></i>
+                        <p>${message}</p>
+                    </td>
+                </tr>
+            `;
+        }
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboard();
+            
+            // Refresh data every 30 seconds
+            setInterval(loadDashboard, 30000);
+        });
+    </script>
+</body>
+</html>
