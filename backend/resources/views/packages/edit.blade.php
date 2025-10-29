@@ -93,7 +93,7 @@
                 <!-- Current Image Preview -->
                 @if($package->image)
                     <div class="mb-3">
-                        <img src="{{ asset('storage/' . $package->image) }}" alt="Current Package Image" class="w-48 h-48 object-cover rounded-lg shadow">
+                        <img src="{{ $package->image_url }}" alt="Current Package Image" class="w-48 h-48 object-cover rounded-lg shadow">
                     </div>
                 @endif
                 

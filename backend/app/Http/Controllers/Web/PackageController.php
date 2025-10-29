@@ -108,8 +108,8 @@ class PackageController extends Controller
 
         if ($request->hasFile('image')) {
             // Hapus gambar lama jika ada
-            if ($package->image) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($package->image);
+            if ($package->image_url) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($package->image_url);
             }
             
             $file = $request->file('image');
