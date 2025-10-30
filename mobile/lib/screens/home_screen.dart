@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
-import 'welcome_screen.dart';
-import 'profile_screen.dart';
-import 'self_photo_detail_screen.dart';
-import 'prewedding_detail_screen.dart';
+import 'package:mobile/services/auth_service.dart';
+import 'package:mobile/screens/welcome_screen.dart';
+import 'package:mobile/screens/profile_screen.dart';
+import 'package:mobile/screens/self_photo_detail_screen.dart';
+import 'package:mobile/screens/prewedding_detail_screen.dart';
+import 'package:mobile/services/package_service.dart';
+import 'package:mobile/models/package.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,12 +18,15 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   PageController _pageController = PageController();
   final _authService = AuthService();
+  final _packageService = PackageService();
   Map<String, dynamic>? _user;
+  List<Package> _packages = [];
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
+    _loadPackages();
   }
 
   Future<void> _loadUserData() async {
@@ -29,6 +34,17 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _user = _authService.user;
     });
+  }
+
+  Future<void> _loadPackages() async {
+    try {
+      final packages = await _packageService.getPackages();
+      setState(() {
+        _packages = packages;
+      });
+    } catch (e) {
+      print('Failed to load packages: $e');
+    }
   }
 
   @override
@@ -164,58 +180,16 @@ class _HomeScreenState extends State<HomeScreen> {
               mainAxisSpacing: 16,
               crossAxisSpacing: 16,
               childAspectRatio: 0.85,
-              children: [
-                _buildPackageCard(
-                  'Self Photo\nStudio',
-                  const Color(0xFF5C6BC0),
-                  Colors.white,
+              children: _packages.map((package) {
+                return _buildPackageCard(
+                  package.name,
+                  package.imageUrl != null ? const Color(0xFF5C6BC0) : Colors.white,
+                  package.imageUrl != null ? Colors.white : Colors.black,
                   () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const SelfPhotoDetailScreen(),
-                      ),
-                    );
+                    // Navigate to package detail
                   },
-                ),
-                _buildPackageCard(
-                  'Foto\nPrewedding',
-                  Colors.white,
-                  Colors.black,
-                  () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PreweddingDetailScreen(),
-                      ),
-                    );
-                  },
-                ),
-                _buildPackageCard(
-                  'Foto\nKeluarga',
-                  Colors.white,
-                  Colors.black,
-                  () {},
-                ),
-                _buildPackageCard(
-                  'Foto\nMaternity',
-                  const Color(0xFF5C6BC0),
-                  Colors.white,
-                  () {},
-                ),
-                _buildPackageCard(
-                  'Foto\nGrup',
-                  const Color(0xFF5C6BC0),
-                  Colors.white,
-                  () {},
-                ),
-                _buildPackageCard(
-                  'Foto\nProfile',
-                  Colors.white,
-                  Colors.black,
-                  () {},
-                ),
-              ],
+                );
+              }).toList(),
             ),
 
             const SizedBox(height: 16),
@@ -256,17 +230,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: const Text(
                       'Pas Photo',
                       style: TextStyle(
-                        fontSize: 16,
                         fontWeight: FontWeight.bold,
-                        color: Colors.black,
+                        fontSize: 16,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-
-            const SizedBox(height: 20),
           ],
         ),
       ),

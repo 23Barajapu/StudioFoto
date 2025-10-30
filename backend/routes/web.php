@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\BookingController;
 use App\Http\Controllers\Web\PaymentController;
 use App\Http\Controllers\Web\PackageController;
+use App\Http\Controllers\Web\ReportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,11 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    
+    // Reports
+    Route::prefix('reports')->name('reports.')->group(function () {
+        Route::get('/revenue', [ReportController::class, 'revenue'])->name('revenue');
+    });
     
     // Bookings Management
     Route::resource('bookings', BookingController::class)->only([

@@ -15,6 +15,10 @@
                 <i class="fas fa-dollar-sign"></i>
                 <span>Kelola Pembayaran</span>
             </a>
+            <a href="{{ route('reports.revenue') }}" class="flex items-center space-x-3 p-3 {{ request()->routeIs('reports.revenue') ? 'sidebar-active' : 'hover:bg-white/10 rounded-lg transition' }}">
+                <i class="fas fa-chart-line"></i>
+                <span>Laporan Pendapatan</span>
+            </a>
             <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/10 rounded-lg transition">
                 <i class="fas fa-bell"></i>
                 <span>Notifikasi</span>
@@ -26,10 +30,6 @@
             <a href="{{ route('packages.index') }}" class="flex items-center space-x-3 p-3 {{ request()->routeIs('packages.*') ? 'sidebar-active' : 'hover:bg-white/10 rounded-lg transition' }}">
                 <i class="fas fa-box"></i>
                 <span>Daftar Paket</span>
-            </a>
-            <a href="#" class="flex items-center space-x-3 p-3 hover:bg-white/10 rounded-lg transition">
-                <i class="fas fa-chart-line"></i>
-                <span>Laporan Pendapatan</span>
             </a>
         </nav>
     </div>
