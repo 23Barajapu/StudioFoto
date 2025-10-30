@@ -99,10 +99,7 @@
             </p>
             <div class="space-y-2 text-sm text-gray-600">
                 <div>
-                    <strong>Admin:</strong> admin@photostudio.com / password123
-                </div>
-                <div>
-                    <strong>Customer:</strong> budi@example.com / password123
+                    <strong>Admin:</strong> admin@photostudio.com / password
                 </div>
             </div>
         </div>

@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Package;
+use App\Http\Resources\PackageResource;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Storage;
 
@@ -66,7 +68,7 @@ class PackageController extends Controller
      */
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'name' => 'required|string|max:255',
             'description' => 'required|string',
             'price' => 'required|numeric|min:0',
@@ -81,24 +83,14 @@ class PackageController extends Controller
             'sort_order' => 'integer',
         ]);
 
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $data = $request->except('image');
-
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('packages', $filename, 'public');
-            $data['image'] = $path;
+            $validated['image'] = $path;
         }
 
-        $package = Package::create($data);
+        $package = Package::create($validated);
 
         return response()->json([
             'success' => true,
@@ -121,39 +113,29 @@ class PackageController extends Controller
             ], 404);
         }
 
-        $validator = Validator::make($request->all(), [
+        $validated = $request->validate([
             'name' => 'sometimes|required|string|max:255',
             'description' => 'sometimes|required|string',
             'price' => 'sometimes|required|numeric|min:0',
             'duration_hours' => 'sometimes|required|integer|min:1',
             'photo_count' => 'sometimes|required|integer|min:1',
             'edited_photo_count' => 'sometimes|required|integer|min:0',
-            'include_makeup' => 'boolean',
-            'include_outfit' => 'boolean',
-            'features' => 'nullable|array',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-            'is_active' => 'boolean',
-            'sort_order' => 'integer',
+            'include_makeup' => 'sometimes|boolean',
+            'include_outfit' => 'sometimes|boolean',
+            'features' => 'sometimes|nullable|array',
+            'image' => 'sometimes|nullable|image|mimes:jpeg,png,jpg|max:2048',
+            'is_active' => 'sometimes|boolean',
+            'sort_order' => 'sometimes|integer',
         ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $data = $request->except('image');
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
             $filename = time() . '_' . $file->getClientOriginalName();
             $path = $file->storeAs('packages', $filename, 'public');
-            $data['image'] = $path;
+            $validated['image'] = $path;
         }
 
-        $package->update($data);
+        $package->update($validated);
 
         return response()->json([
             'success' => true,

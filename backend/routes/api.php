@@ -80,9 +80,17 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
         Route::get('/revenue-report', [DashboardController::class, 'revenueReport']);
 
         // Package Management
-        Route::post('/packages', [PackageController::class, 'store']);
-        Route::put('/packages/{id}', [PackageController::class, 'update']);
-        Route::delete('/packages/{id}', [PackageController::class, 'destroy']);
+        Route::prefix('v1')->group(function () {
+            Route::get('/packages', [PackageController::class, 'index']);
+            Route::get('/packages/{package}', [PackageController::class, 'show']);
+            
+            // Protected routes (require authentication)
+            Route::middleware(['auth:sanctum', 'admin'])->group(function () {
+                Route::post('/packages', [PackageController::class, 'store']);
+                Route::put('/packages/{package}', [PackageController::class, 'update']);
+                Route::delete('/packages/{package}', [PackageController::class, 'destroy']);
+            });
+        });
 
         // Schedule Management
         Route::get('/schedules/{id}', [ScheduleController::class, 'show']);

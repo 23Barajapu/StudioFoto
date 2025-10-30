@@ -120,7 +120,7 @@ class PackageController extends Controller
 
         $package->update($data);
 
-        return redirect()->route('packages.show', $package)
+        return redirect()->route('packages.index')
             ->with('success', 'Paket berhasil diperbarui');
     }
 
