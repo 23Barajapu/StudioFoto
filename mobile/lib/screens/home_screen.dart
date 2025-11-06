@@ -4,8 +4,10 @@ import 'package:mobile/screens/welcome_screen.dart';
 import 'package:mobile/screens/profile_screen.dart';
 import 'package:mobile/screens/self_photo_detail_screen.dart';
 import 'package:mobile/screens/prewedding_detail_screen.dart';
-import 'package:mobile/services/package_service.dart';
+import 'package:mobile/screens/booking_screen.dart';
+import 'package:mobile/services/api_service.dart';
 import 'package:mobile/models/package.dart';
+import 'package:mobile/models/category.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,22 +24,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic>? _user;
   List<Package> _packages = [];
 
-  // Category data
-  final List<Map<String, dynamic>> _categories = [
-    {'name': 'Self Photo Studio', 'icon': Icons.person_outline},
-    {'name': 'Keluarga', 'icon': Icons.people_outline},
-    {'name': 'Maternity', 'icon': Icons.child_friendly_outlined},
-    {'name': 'Prewedding', 'icon': Icons.favorite_border},
-    {'name': 'Grup', 'icon': Icons.group_outlined},
-    {'name': 'Pas Foto', 'icon': Icons.camera_alt_outlined},
-    {'name': 'Profile', 'icon': Icons.account_circle_outlined},
-  ];
+  // Data
+  List<Category> _categories = [];
 
   @override
   void initState() {
     super.initState();
     _loadUserData();
-    _loadPackages();
+    _loadData();
   }
 
   Future<void> _loadUserData() async {
@@ -47,14 +41,29 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
-  Future<void> _loadPackages() async {
+  Future<void> _loadData() async {
     try {
-      final packages = await _packageService.getPackages();
+      // Load categories
+      final categories = await ApiService.getCategories();
+      
+      // Load packages
+      final packages = await ApiService.getPackages();
+      
       setState(() {
+        _categories = categories;
         _packages = packages;
       });
     } catch (e) {
-      print('Failed to load packages: $e');
+      print('Failed to load data: $e');
+      // Show error message to user
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Gagal memuat data. Silakan coba lagi.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -187,7 +196,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 scrollDirection: Axis.horizontal,
                 itemCount: _categories.length,
                 itemBuilder: (context, index) {
-                  return _buildCategoryItem(_categories[index]);
+                  final category = _categories[index];
+                return _buildCategoryItem({
+                  'name': category.name,
+                  'icon': _getCategoryIcon(category.name),
+                });
                 },
               ),
             ),
@@ -220,7 +233,15 @@ class _HomeScreenState extends State<HomeScreen> {
                   package.imageUrl != null ? const Color(0xFF5C6BC0) : Colors.white,
                   package.imageUrl != null ? Colors.white : Colors.black,
                   () {
-                    // Navigate to package detail
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => BookingScreen(
+                          packageName: package.name,
+                          packagePrice: 'Rp ${package.price?.toStringAsFixed(0).replaceAll(RegExp(r'\B(?=(\d{3})+(?!\d))'), '.') ?? '0'},-',
+                        ),
+                      ),
+                    );
                   },
                 );
               }).toList(),
@@ -319,6 +340,28 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       ),
     );
+  }
+
+  // Helper method to get icon based on category name
+  IconData _getCategoryIcon(String categoryName) {
+    switch (categoryName.toLowerCase()) {
+      case 'self photo studio':
+        return Icons.person_outline;
+      case 'keluarga':
+        return Icons.people_outline;
+      case 'maternity':
+        return Icons.child_friendly_outlined;
+      case 'prewedding':
+        return Icons.favorite_border;
+      case 'grup':
+        return Icons.group_outlined;
+      case 'pas foto':
+        return Icons.camera_alt_outlined;
+      case 'profile':
+        return Icons.account_circle_outlined;
+      default:
+        return Icons.category_outlined;
+    }
   }
 
   Widget _buildCategoryItem(Map<String, dynamic> category) {
