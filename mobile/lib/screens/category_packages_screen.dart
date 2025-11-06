@@ -29,24 +29,35 @@ class _CategoryPackagesScreenState extends State<CategoryPackagesScreen> {
   }
 
   Future<void> _loadCategoryPackages() async {
+    if (!mounted) return;
+    
     try {
       setState(() {
         _isLoading = true;
         _error = '';
       });
 
-      final packages = await ApiService.getPackages(categoryId: widget.categoryId);
+      final packages = await ApiService.getPackages(
+        categoryId: widget.categoryId > 0 ? widget.categoryId : null,
+      );
+      
+      if (!mounted) return;
       
       setState(() {
         _packages = packages;
         _isLoading = false;
       });
     } catch (e) {
+      print('Error loading category packages: $e');
+      
+      if (!mounted) return;
+      
       setState(() {
-        _error = 'Gagal memuat paket. Silakan coba lagi.';
+        _error = e.toString().contains('404')
+            ? 'Paket tidak ditemukan untuk kategori ini.'
+            : 'Gagal memuat paket. Silakan coba lagi.';
         _isLoading = false;
       });
-      print('Error loading category packages: $e');
     }
   }
 

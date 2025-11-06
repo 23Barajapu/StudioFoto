@@ -23,7 +23,14 @@ class CategorySeeder extends Seeder
         ];  
 
         foreach ($categories as $category) {
-            \App\Models\Category::create($category);
+            try {
+                \App\Models\Category::firstOrCreate(
+                    ['slug' => $category['slug']],
+                    $category
+                );
+            } catch (\Exception $e) {
+                $this->command->warn("Error seeding category {$category['name']}: " . $e->getMessage());
+            }
         }
     }
 }
