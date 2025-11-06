@@ -5,9 +5,10 @@ import 'package:mobile/screens/profile_screen.dart';
 import 'package:mobile/screens/self_photo_detail_screen.dart';
 import 'package:mobile/screens/prewedding_detail_screen.dart';
 import 'package:mobile/screens/booking_screen.dart';
-import 'package:mobile/services/api_service.dart';
+import 'package:mobile/screens/category_packages_screen.dart';
 import 'package:mobile/models/package.dart';
 import 'package:mobile/models/category.dart';
+import 'package:mobile/services/api_service.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,7 +21,6 @@ class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   PageController _pageController = PageController();
   final _authService = AuthService();
-  final _packageService = PackageService();
   Map<String, dynamic>? _user;
   List<Package> _packages = [];
 
@@ -342,6 +342,26 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // Navigate to packages filtered by category
+  void _navigateToCategoryPackages(String categoryName) {
+    // Find the category from the _categories list
+    final category = _categories.firstWhere(
+      (cat) => cat.name == categoryName,
+      orElse: () => Category(id: -1, name: categoryName),
+    );
+
+    // Navigate to the category packages screen
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => CategoryPackagesScreen(
+          categoryId: category.id,
+          categoryName: category.name,
+        ),
+      ),
+    );
+  }
+
   // Helper method to get icon based on category name
   IconData _getCategoryIcon(String categoryName) {
     switch (categoryName.toLowerCase()) {
@@ -365,46 +385,52 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildCategoryItem(Map<String, dynamic> category) {
-    return Container(
-      margin: const EdgeInsets.only(right: 12.0),
-      child: Column(
-        children: [
-          Container(
-            width: 70,
-            height: 70,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(15),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.2),
-                  spreadRadius: 1,
-                  blurRadius: 5,
-                  offset: const Offset(0, 2),
-                ),
-              ],
-            ),
-            child: Icon(
-              category['icon'],
-              size: 30,
-              color: Theme.of(context).primaryColor,
-            ),
-          ),
-          const SizedBox(height: 6),
-          SizedBox(
-            width: 80,
-            child: Text(
-              category['name'],
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
+    return GestureDetector(
+      onTap: () {
+        // Navigate to package list filtered by category
+        _navigateToCategoryPackages(category['name']);
+      },
+      child: Container(
+        margin: const EdgeInsets.only(right: 12.0),
+        child: Column(
+          children: [
+            Container(
+              width: 70,
+              height: 70,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    spreadRadius: 1,
+                    blurRadius: 5,
+                    offset: const Offset(0, 2),
+                  ),
+                ],
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              child: Icon(
+                category['icon'],
+                size: 30,
+                color: Theme.of(context).primaryColor,
+              ),
             ),
-          ),
-        ],
+            const SizedBox(height: 6),
+            SizedBox(
+              width: 80,
+              child: Text(
+                category['name'],
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
