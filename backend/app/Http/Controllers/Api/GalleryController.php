@@ -229,14 +229,10 @@ class GalleryController extends Controller
      */
     public function categories()
     {
-        $categories = [
-            ['value' => 'wedding', 'label' => 'Pernikahan'],
-            ['value' => 'prewedding', 'label' => 'Prewedding'],
-            ['value' => 'portrait', 'label' => 'Potret'],
-            ['value' => 'product', 'label' => 'Produk'],
-            ['value' => 'event', 'label' => 'Acara'],
-            ['value' => 'other', 'label' => 'Lainnya'],
-        ];
+        $categories = \App\Models\Category::select('slug as value', 'name as label')
+            ->orderBy('name')
+            ->get()
+            ->toArray();
 
         return response()->json([
             'success' => true,

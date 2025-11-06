@@ -22,6 +22,17 @@ class _HomeScreenState extends State<HomeScreen> {
   Map<String, dynamic>? _user;
   List<Package> _packages = [];
 
+  // Category data
+  final List<Map<String, dynamic>> _categories = [
+    {'name': 'Self Photo Studio', 'icon': Icons.person_outline},
+    {'name': 'Keluarga', 'icon': Icons.people_outline},
+    {'name': 'Maternity', 'icon': Icons.child_friendly_outlined},
+    {'name': 'Prewedding', 'icon': Icons.favorite_border},
+    {'name': 'Grup', 'icon': Icons.group_outlined},
+    {'name': 'Pas Foto', 'icon': Icons.camera_alt_outlined},
+    {'name': 'Profile', 'icon': Icons.account_circle_outlined},
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -158,7 +169,30 @@ class _HomeScreenState extends State<HomeScreen> {
               }),
             ),
 
-            const SizedBox(height: 32),
+            const SizedBox(height: 24),
+
+            // Categories Section
+            const Text(
+              'Kategori Foto',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            const SizedBox(height: 12),
+            SizedBox(
+              height: 100,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: _categories.length,
+                itemBuilder: (context, index) {
+                  return _buildCategoryItem(_categories[index]);
+                },
+              ),
+            ),
+
+            const SizedBox(height: 24),
 
             // Popular Packages Section
             const Text(
@@ -283,6 +317,51 @@ class _HomeScreenState extends State<HomeScreen> {
             color: Colors.black54,
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildCategoryItem(Map<String, dynamic> category) {
+    return Container(
+      margin: const EdgeInsets.only(right: 12.0),
+      child: Column(
+        children: [
+          Container(
+            width: 70,
+            height: 70,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(15),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.2),
+                  spreadRadius: 1,
+                  blurRadius: 5,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Icon(
+              category['icon'],
+              size: 30,
+              color: Theme.of(context).primaryColor,
+            ),
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            width: 80,
+            child: Text(
+              category['name'],
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
       ),
     );
   }

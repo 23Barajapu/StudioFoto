@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Web;
 
 use App\Http\Controllers\Controller;
 use App\Models\Package;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class PackageController extends Controller
 {
@@ -26,7 +28,14 @@ class PackageController extends Controller
      */
     public function create()
     {
-        return view('packages.create');
+        $parentPackages = Package::whereNull('parent_id')
+            ->with('children')
+            ->ordered()
+            ->get();
+            
+        $categories = Category::orderBy('name')->get();
+            
+        return view('packages.create', compact('parentPackages', 'categories'));
     }
 
     /**
@@ -44,20 +53,28 @@ class PackageController extends Controller
             'include_makeup' => 'boolean',
             'include_outfit' => 'boolean',
             'features' => 'nullable|array',
+            'parent_id' => 'nullable|exists:packages,id',
+            'categories' => 'required|array',
+            'categories.*' => 'exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $data = $request->except('image');
-        $data['slug'] = Str::slug($request->name);
+        return DB::transaction(function () use ($request) {
+            $data = $request->except(['image', 'categories']);
+            $data['slug'] = Str::slug($request->name);
 
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('packages', $filename, 'public');
-            $data['image'] = $path;
-        }
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('packages', $filename, 'public');
+                $data['image'] = $path;
+            }
 
-        Package::create($data);
+            $package = Package::create($data);
+            $package->categories()->sync($request->categories);
+            
+            return $package;
+        });
 
         return redirect()->route('packages.index')
             ->with('success', 'Paket berhasil dibuat');
@@ -80,7 +97,16 @@ class PackageController extends Controller
      */
     public function edit(Package $package)
     {
-        return view('packages.edit', compact('package'));
+        $parentPackages = Package::whereNull('parent_id')
+            ->with('children')
+            ->where('id', '!=', $package->id) // Prevent self-referencing
+            ->ordered()
+            ->get();
+            
+        $categories = Category::orderBy('name')->get();
+        $package->load('categories');
+            
+        return view('packages.edit', compact('package', 'parentPackages', 'categories'));
     }
 
     /**
@@ -99,26 +125,43 @@ class PackageController extends Controller
             'include_makeup' => 'boolean',
             'include_outfit' => 'boolean',
             'features' => 'nullable|array',
+            'parent_id' => [
+                'nullable',
+                'exists:packages,id',
+                function ($attribute, $value, $fail) use ($package) {
+                    // Prevent circular references
+                    if ($package->children()->where('id', $value)->exists()) {
+                        $fail('Cannot set a child package as parent.');
+                    }
+                },
+            ],
+            'categories' => 'required|array',
+            'categories.*' => 'exists:categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        $data = $request->except('image');
-        $data['slug'] = Str::slug($request->name);
-        $data['is_active'] = $request->has('is_active');
+        return DB::transaction(function () use ($request, $package) {
+            $data = $request->except(['image', 'categories', '_method', '_token']);
+            $data['slug'] = Str::slug($request->name);
+            $data['is_active'] = $request->has('is_active');
 
-        if ($request->hasFile('image')) {
-            // Hapus gambar lama jika ada
-            if ($package->image_url) {
-                \Illuminate\Support\Facades\Storage::disk('public')->delete($package->image_url);
+            if ($request->hasFile('image')) {
+                // Hapus gambar lama jika ada
+                if ($package->image) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($package->image);
+                }
+                
+                $file = $request->file('image');
+                $filename = time() . '_' . $file->getClientOriginalName();
+                $path = $file->storeAs('packages', $filename, 'public');
+                $data['image'] = $path;
             }
-            
-            $file = $request->file('image');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $path = $file->storeAs('packages', $filename, 'public');
-            $data['image'] = $path;
-        }
 
-        $package->update($data);
+            $package->update($data);
+            $package->categories()->sync($request->categories);
+            
+            return $package;
+        });
 
         return redirect()->route('packages.index')
             ->with('success', 'Paket berhasil diperbarui');
@@ -133,7 +176,10 @@ class PackageController extends Controller
             return back()->with('error', 'Paket tidak dapat dihapus karena sudah memiliki booking');
         }
 
-        $package->delete();
+        DB::transaction(function () use ($package) {
+            $package->categories()->detach();
+            $package->delete();
+        });
 
         return redirect()->route('packages.index')
             ->with('success', 'Paket berhasil dihapus');

@@ -22,9 +22,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _loadUserData() async {
-    await _authService.loadSavedToken();
+    print('Loading user data...');
+    bool loaded = await _authService.loadSavedToken();
+    print('Token loaded: $loaded');
     setState(() {
       _user = _authService.user;
+      print('User data loaded: ${_user != null}');
+      print('Password available: ${_authService.password != null}');
     });
   }
 
@@ -195,10 +199,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Expanded(
                         child: Text(
-                          _isPasswordVisible ? 'pitas129' : '••••••••',
-                          style: const TextStyle(
+                          _isPasswordVisible 
+                              ? (_authService.password ?? 'Tidak tersedia')
+                              : '••••••••',
+                          style: TextStyle(
                             fontSize: 16,
-                            color: Colors.black,
+                            color: _isPasswordVisible && _authService.password == null 
+                                ? Colors.grey 
+                                : Colors.black,
                           ),
                         ),
                       ),

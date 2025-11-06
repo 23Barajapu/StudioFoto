@@ -6,7 +6,6 @@ use App\Http\Controllers\Web\AuthController;
 use App\Http\Controllers\Web\DashboardController;
 use App\Http\Controllers\Web\BookingController;
 use App\Http\Controllers\Web\PaymentController;
-use App\Http\Controllers\Web\PackageController;
 use App\Http\Controllers\Web\ReportController;
 
 /*
@@ -48,6 +47,15 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
         Route::get('/revenue', [ReportController::class, 'revenue'])->name('revenue');
     });
     
+    // Categories
+    Route::resource('categories', \App\Http\Controllers\Web\CategoryController::class)->except(['show']);
+    
+    // Category Packages
+    Route::prefix('categories/{category}')->name('categories.')->group(function () {
+        Route::get('/packages', [\App\Http\Controllers\Web\CategoryController::class, 'packages'])->name('packages.index');
+        Route::post('/packages', [\App\Http\Controllers\Web\CategoryController::class, 'addPackage'])->name('packages.store');
+    });
+    
     // Bookings Management
     Route::resource('bookings', BookingController::class)->only([
         'index', 'create', 'show'
@@ -57,9 +65,6 @@ Route::middleware(['auth', 'check.user.status'])->group(function () {
     Route::resource('payments', PaymentController::class)->only([
         'index', 'show'
     ]);
-    
-    // Packages Management
-    Route::resource('packages', PackageController::class);
     
     // Admin Only Routes
     Route::middleware('admin')->group(function () {

@@ -3,7 +3,6 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\PackageController;
 use App\Http\Controllers\Api\BookingController;
 use App\Http\Controllers\Api\ScheduleController;
 use App\Http\Controllers\Api\PaymentController;
@@ -25,10 +24,6 @@ Route::post('/login', [AuthController::class, 'login']);
 Route::get('/galleries', [GalleryController::class, 'index']);
 Route::get('/galleries/{id}', [GalleryController::class, 'show']);
 Route::get('/galleries/categories/list', [GalleryController::class, 'categories']);
-
-// Public packages
-Route::get('/packages', [PackageController::class, 'index']);
-Route::get('/packages/{id}', [PackageController::class, 'show']);
 
 // Public reviews
 Route::get('/reviews', [ReviewController::class, 'index']);
@@ -74,23 +69,9 @@ Route::middleware(['auth:sanctum', 'check.user.status'])->group(function () {
 
     // Admin only routes
     Route::middleware(['admin'])->prefix('admin')->group(function () {
-        
         // Dashboard & Stats
         Route::get('/dashboard', [DashboardController::class, 'stats']);
         Route::get('/revenue-report', [DashboardController::class, 'revenueReport']);
-
-        // Package Management
-        Route::prefix('v1')->group(function () {
-            Route::get('/packages', [PackageController::class, 'index']);
-            Route::get('/packages/{package}', [PackageController::class, 'show']);
-            
-            // Protected routes (require authentication)
-            Route::middleware(['auth:sanctum', 'admin'])->group(function () {
-                Route::post('/packages', [PackageController::class, 'store']);
-                Route::put('/packages/{package}', [PackageController::class, 'update']);
-                Route::delete('/packages/{package}', [PackageController::class, 'destroy']);
-            });
-        });
 
         // Schedule Management
         Route::get('/schedules/{id}', [ScheduleController::class, 'show']);

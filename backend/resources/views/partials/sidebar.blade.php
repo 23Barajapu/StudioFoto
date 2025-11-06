@@ -27,9 +27,9 @@
                 <i class="fas fa-history"></i>
                 <span>Riwayat pemesanan</span>
             </a>
-            <a href="{{ route('packages.index') }}" class="flex items-center space-x-3 p-3 {{ request()->routeIs('packages.*') ? 'sidebar-active' : 'hover:bg-white/10 rounded-lg transition' }}">
-                <i class="fas fa-box"></i>
-                <span>Daftar Paket</span>
+            <a href="{{ route('categories.index') }}" class="flex items-center space-x-3 p-3 {{ request()->routeIs('categories.*') ? 'sidebar-active' : 'hover:bg-white/10 rounded-lg transition' }}">
+                <i class="fas fa-tags"></i>
+                <span>Daftar Kategori</span>
             </a>
         </nav>
     </div>

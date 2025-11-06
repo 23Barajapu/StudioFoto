@@ -100,7 +100,13 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{{ $booking->user->name }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $booking->booking_date->format('d/m/Y') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ date('H:i', strtotime($booking->booking_time)) }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $booking->package->name }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                @if($booking->package)
+                                    {{ $booking->package->name }}
+                                @else
+                                    <span class="text-red-500">Paket tidak ditemukan</span>
+                                @endif
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{{ $booking->formatted_price }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 text-center">1</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm">

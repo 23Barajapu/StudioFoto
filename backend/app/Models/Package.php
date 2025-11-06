@@ -30,7 +30,32 @@ class Package extends Model
         'image',
         'is_active',
         'sort_order',
+        'parent_id',
     ];
+
+    /**
+     * Get the parent package
+     */
+    public function parent()
+    {
+        return $this->belongsTo(Package::class, 'parent_id');
+    }
+
+    /**
+     * Get the child packages
+     */
+    public function children()
+    {
+        return $this->hasMany(Package::class, 'parent_id')->orderBy('sort_order');
+    }
+
+    /**
+     * Check if package has children
+     */
+    public function hasChildren()
+    {
+        return $this->children()->exists();
+    }
 
     /**
      * The attributes that should be cast.

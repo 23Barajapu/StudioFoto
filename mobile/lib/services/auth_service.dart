@@ -28,14 +28,18 @@ class AuthService {
   
   String? _token;
   Map<String, dynamic>? _user;
+  String? _password;
 
   // Getter
   String? get token => _token;
   Map<String, dynamic>? get user => _user;
   bool get isLoggedIn => _token != null;
+  String? get password => _password;
 
   // Login
   Future<Map<String, dynamic>> login(String email, String password) async {
+    _password = password; // Store the password in memory
+    print('Storing password: $password'); // Debug log
     try {
       final response = await http.post(
         Uri.parse('$baseUrl/login'),
@@ -60,8 +64,10 @@ class AuthService {
 
         // Save to SharedPreferences
         final prefs = await SharedPreferences.getInstance();
-        await prefs.setString('auth_token', _token!);
-        await prefs.setString('user', jsonEncode(_user));
+await prefs.setString('auth_token', _token!);
+await prefs.setString('user', jsonEncode(_user));
+        await prefs.setString('user_password', password);
+  print('Password saved to SharedPreferences');
 
         return {
           'success': true,
@@ -161,24 +167,33 @@ class AuthService {
     // Clear local data
     _token = null;
     _user = null;
+    _password = null;
 
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('auth_token');
     await prefs.remove('user');
+    await prefs.remove('user_password');
   }
 
   // Load saved token
   Future<bool> loadSavedToken() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      _token = prefs.getString('auth_token');
-      final userString = prefs.getString('user');
-
-      if (_token != null && userString != null) {
-        _user = jsonDecode(userString);
-        return true;
+      final token = prefs.getString('auth_token');
+      if (token != null) {
+        _token = token;
+        final userString = prefs.getString('user');
+        if (userString != null) {
+          _user = jsonDecode(userString);
+        }
+        _password = prefs.getString('user_password');
+        print('Loaded from SharedPreferences - Token: ${_token != null}');
+        print('Loaded from SharedPreferences - User: ${_user != null}');
+        print('Loaded from SharedPreferences - Password: ${_password != null}');
+      } else {
+        print('No token found in SharedPreferences');
       }
-      return false;
+      return true;
     } catch (e) {
       print('Load token error: $e');
       return false;
